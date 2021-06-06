@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.Timer;
 
@@ -15,8 +16,6 @@ import wave_drawer.MouseStroke;
 
 public class DrawPanel extends Canvas {
 
-	
-	
 	public MouseStroke currentStroke; // stores the points drawn in the current mouse stroke
 	private boolean mouseDown = false;
 
@@ -43,7 +42,7 @@ public class DrawPanel extends Canvas {
             public void mouseReleased(MouseEvent e) {
             	mouseDown = false;
             	// finish mouse stroke, add it to allMouseStrokes, and reset currentStroke
-            	MouseStroke.allFinalizedMouseStrokes.add(currentStroke);
+            	MouseStroke.finalizeMouseStroke(currentStroke);
             	currentStroke = new MouseStroke();
             }
         };
@@ -69,18 +68,12 @@ public class DrawPanel extends Canvas {
 		Graphics2D g = (Graphics2D)graphics;
 
 		// gets all points from allFinalizedMouseStrokes and currentStroke
-		ArrayList<Point> allPoints = new ArrayList<Point>();
-		for(Point p : MouseStroke.getAllFinalizedPointsDrawn()) {
-			allPoints.add(p);
-		}
-		for(Point p : currentStroke.pointArray) {
-			allPoints.add(p);
-		}
+		HashMap<Integer, Integer> allPoints = MouseStroke.addPointMaps(MouseStroke.allFinalizedPoints, currentStroke.pointMap);
 		
 		// draws all points
 		g.setColor(Color.BLUE);
-		for(Point p : allPoints) {
-			g.fillOval(p.x, p.y, 5, 5);
+		for(Integer x : allPoints.keySet()) {
+			g.fillOval(x, allPoints.get(x), 5, 5);
 		}
 	}
 	
