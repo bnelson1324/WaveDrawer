@@ -7,16 +7,15 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 import javax.swing.Timer;
 
 import wave_drawer.MouseStroke;
+import wave_drawer.PointMap;
 
 public class DrawPanel extends Canvas {
 
-	
-	
+	public PointMap pointsToDraw; // queue of points to draw
 	public MouseStroke currentStroke; // stores the points drawn in the current mouse stroke
 	private boolean mouseDown = false;
 
@@ -24,6 +23,7 @@ public class DrawPanel extends Canvas {
 		super();
 		setBackground(Color.WHITE);
 		
+		pointsToDraw = new PointMap();
 		currentStroke = new MouseStroke();
 		
 		MouseAdapter adapter = new MouseAdapter() {
@@ -31,28 +31,29 @@ public class DrawPanel extends Canvas {
             @Override
             public void mousePressed(MouseEvent e) {
             	mouseDown = true;
-            	makePoint(e);
+            	queuePointForDrawing(e);
             }
             
             @Override
             public void mouseDragged(MouseEvent e) {
-            	makePoint(e);
+            	queuePointForDrawing(e);
             }
         
             @Override
             public void mouseReleased(MouseEvent e) {
             	mouseDown = false;
-            	// finish mouse stroke, add it to allMouseStrokes, and reset currentStroke
-            	MouseStroke.allFinalizedMouseStrokes.add(currentStroke);
+            	// finish mouse stroke, add it to allMouseStrokes, reset currentStroke, and repaint
+            	MouseStroke.finalizeMouseStroke(currentStroke);
             	currentStroke = new MouseStroke();
+            	repaint();
             }
         };
 		
 		addMouseListener(adapter);
 		addMouseMotionListener(adapter);
 		
-		// timer to redraw the drawPanel 30 times per second if mouse is down
-		Timer redrawTimer = new Timer((int) (1f/30*1000), (e) -> {
+		// timer to paint the drawPanel 60 times per second if mouse is down
+		Timer redrawTimer = new Timer((int) (1f/60*1000), (e) -> {
 			if(this.mouseDown) {
 				this.repaint();
 			}
@@ -60,28 +61,33 @@ public class DrawPanel extends Canvas {
 		redrawTimer.start();
 	}
 	
-	public void makePoint(MouseEvent e) {
-		currentStroke.addPoint(e.getPoint());
+	public void queuePointForDrawing(MouseEvent e) {
+		Point p = e.getPoint();
+		pointsToDraw.put(p.x, p.y);
 	}
 	
+	/* drawing */
 	@Override
 	public void paint(Graphics graphics) {
 		Graphics2D g = (Graphics2D)graphics;
-
-		// gets all points from allFinalizedMouseStrokes and currentStroke
-		ArrayList<Point> allPoints = new ArrayList<Point>();
-		for(Point p : MouseStroke.getAllFinalizedPointsDrawn()) {
-			allPoints.add(p);
-		}
-		for(Point p : currentStroke.pointArray) {
-			allPoints.add(p);
-		}
 		
-		// draws all points
+		// draws each point in pointsToDraw if there is not already a point at that x value
+		PointMap pointsToDrawClone = (PointMap) pointsToDraw.clone();
+		pointsToDraw.clear();
+		
 		g.setColor(Color.BLUE);
-		for(Point p : allPoints) {
-			g.fillOval(p.x, p.y, 5, 5);
-		}
+		for(Integer x : pointsToDrawClone.keySet()) {
+			if(!(MouseStroke.allFinalizedPoints.containsKey(x) || currentStroke.pointMap.containsKey(x))) {
+				g.fillOval(x, pointsToDrawClone.get(x), 5, 5);
+				currentStroke.addPoint(new Point(x, pointsToDrawClone.get(x)));
+			}
+		}	
+	}
+	
+	/* misc */
+	@Override
+	public void update(Graphics g) {
+		paint(g);
 	}
 	
 }
