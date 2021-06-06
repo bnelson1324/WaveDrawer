@@ -26,21 +26,23 @@ public class MouseStroke {
 	
 	// finalizes a mouse stroke, adding each of its points to allFinalizedPoints if there is not already a point at the same x value
 	public static void finalizeMouseStroke(MouseStroke ms) {
-		allFinalizedPoints = addPointMaps(allFinalizedPoints, ms.pointMap);
+		addPointMaps(allFinalizedPoints, ms.pointMap);
 		MouseStroke.allFinalizedMouseStrokes.add(ms);
 	}
 	
-	// adds each point in toAdd to mainMap if mainMap doesn't have a point in the same spot, creating a new pointMap
-	public static HashMap<Integer, Integer> addPointMaps(HashMap<Integer, Integer> mainMap, HashMap<Integer, Integer> toAdd) {
-		HashMap<Integer, Integer> newMap = (HashMap<Integer, Integer>) mainMap.clone();
+	// adds each point in toAdd to mainMap if mainMap doesn't have a point in the same spot
+	public static void addPointMaps(HashMap<Integer, Integer> mainMap, HashMap<Integer, Integer> toAdd) {
+		ArrayList<Integer> xValsToRemove = new ArrayList<Integer>(); // list of x values to remove from toAdd b/c they already exist in mainMap
 		for(Integer x : toAdd.keySet()) {
-			if(!newMap.containsKey(x)) {
-				newMap.put(x, toAdd.get(x));
+			if(!mainMap.containsKey(x)) {
+				mainMap.put(x, toAdd.get(x));
 			} else {
-				toAdd.remove(x);
+				xValsToRemove.add(x);
 			}
 		}
-		return newMap;
+		for(Integer x : xValsToRemove) {
+			toAdd.remove(x);
+		}
 	}
 	
 }

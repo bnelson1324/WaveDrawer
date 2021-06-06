@@ -41,9 +41,10 @@ public class DrawPanel extends Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
             	mouseDown = false;
-            	// finish mouse stroke, add it to allMouseStrokes, and reset currentStroke
+            	// finish mouse stroke, add it to allMouseStrokes, reset currentStroke, and repaint
             	MouseStroke.finalizeMouseStroke(currentStroke);
             	currentStroke = new MouseStroke();
+            	repaint();
             }
         };
 		
@@ -63,18 +64,22 @@ public class DrawPanel extends Canvas {
 		currentStroke.addPoint(e.getPoint());
 	}
 	
+	/* drawing */
 	@Override
 	public void paint(Graphics graphics) {
 		Graphics2D g = (Graphics2D)graphics;
-
-		// gets all points from allFinalizedMouseStrokes and currentStroke
-		HashMap<Integer, Integer> allPoints = MouseStroke.addPointMaps(MouseStroke.allFinalizedPoints, currentStroke.pointMap);
 		
 		// draws all points
 		g.setColor(Color.BLUE);
-		for(Integer x : allPoints.keySet()) {
-			g.fillOval(x, allPoints.get(x), 5, 5);
+		for(Integer x : currentStroke.pointMap.keySet()) {
+			g.fillOval(x, currentStroke.pointMap.get(x), 5, 5);
 		}
+	}
+	
+	/* misc */
+	@Override
+	public void update(Graphics g) {
+		paint(g);
 	}
 	
 }
