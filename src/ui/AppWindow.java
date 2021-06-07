@@ -2,6 +2,9 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -11,12 +14,14 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import wave_drawer.WavePlayer;
+
 public class AppWindow extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField tfFrequency;
-	private JTextField tfVolume;
-
+	private JButton btnPlay, btnClear, btnUndo, btnRedo;
+	private JTextField tfFrequency, tfVolume;
+	
 	public AppWindow() {
 		setTitle("Wave Drawer");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,11 +45,14 @@ public class AppWindow extends JFrame {
 		JPanel pnlToolbar = new JPanel();
 		pnlMain.add(pnlToolbar, BorderLayout.SOUTH);
 		
-		JButton btnClear = new JButton("Clear");
+		btnClear = new JButton("Clear");
 		pnlToolbar.add(btnClear);
 		
-		JButton btnUndo = new JButton("Undo");
+		btnUndo = new JButton("Undo");
 		pnlToolbar.add(btnUndo);
+		
+		btnRedo = new JButton("Redo");
+		pnlToolbar.add(btnRedo);
 		
 		JPanel pnlPlay = new JPanel();
 		contentPane.add(pnlPlay, BorderLayout.SOUTH);
@@ -52,14 +60,14 @@ public class AppWindow extends JFrame {
 		tfFrequency = new JTextField();
 		tfFrequency.setText("440");
 		tfFrequency.setToolTipText("frequency at which the wave is to be played");
-		tfFrequency.setColumns(4);
+		tfFrequency.setColumns(6);
 		
 		JLabel lblFrequency = new JLabel("Frequency");
 		pnlPlay.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		pnlPlay.add(lblFrequency);
 		pnlPlay.add(tfFrequency);
 		
-		JButton btnPlay = new JButton("Play");
+		btnPlay = new JButton("Play");
 		pnlPlay.add(btnPlay);
 		
 		JLabel lblVolume = new JLabel("Volume");
@@ -68,8 +76,62 @@ public class AppWindow extends JFrame {
 		tfVolume = new JTextField();
 		tfVolume.setToolTipText("volume (out of 100)");
 		tfVolume.setText("50");
-		tfVolume.setColumns(2);
+		tfVolume.setColumns(3);
 		pnlPlay.add(tfVolume);
+		
+		addListeners();
+	}
+	
+	private void addListeners() {
+		btnPlay.addActionListener((e) -> {
+			WavePlayer.isPlaying = !WavePlayer.isPlaying;
+		});
+		btnClear.addActionListener((e) -> {
+			
+		});
+		btnUndo.addActionListener((e) -> {
+			
+		});
+		btnRedo.addActionListener((e) -> {
+			
+		});
+		
+		tfFrequency.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					try {
+						WavePlayer.frequency = clamp(Float.parseFloat(tfFrequency.getText()), 0, 999999);;
+					} catch(NumberFormatException ex){
+					}
+					tfFrequency.setText(String.valueOf(WavePlayer.frequency));
+				}
+			}
+		});
+		
+		tfVolume.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					try {
+						WavePlayer.volume = (int) clamp(Integer.parseInt(tfVolume.getText()), 0, 100);
+					} catch(NumberFormatException ex){
+					}
+					tfVolume.setText(String.valueOf(WavePlayer.volume));
+				}
+			}
+		});
+	}
+
+	
+	private float clamp(float val, float min, float max) {
+		if(val > max) {
+			return max;
+		}
+		if(val < min) {
+			return min;
+		}
+		return val;
 	}
 	
 }
