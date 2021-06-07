@@ -32,7 +32,7 @@ public class MouseStroke {
 	
 	// undos a given amount of mouseStrokes
 	public static void undo(int numStrokes) {
-		if(allFinalizedMouseStrokes.size() < 1) {
+		if(allFinalizedMouseStrokes.size() < 1 || WavePlayer.isPlaying) {
 			return;
 		}
 		int totalStrokes = allFinalizedMouseStrokes.size();
@@ -48,7 +48,7 @@ public class MouseStroke {
 	}
 	
 	public static void redo() {
-		if(redoQueue.size() < 1) {
+		if(redoQueue.size() < 1 || WavePlayer.isPlaying) {
 			return;
 		}
 		int i = redoQueue.size() - 1;

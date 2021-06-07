@@ -18,7 +18,6 @@ public class DrawPanel extends Canvas {
 
 	public PointMap pointsToDraw; // queue of points to draw
 	public MouseStroke currentStroke; // stores the points drawn in the current mouse stroke
-	private boolean mouseDown = false;
 	
 	public static volatile boolean clearAndRedraw = false; // whether the paint function should clear and redraw all points next time it is called
 
@@ -33,7 +32,6 @@ public class DrawPanel extends Canvas {
 
             @Override
             public void mousePressed(MouseEvent e) {
-            	mouseDown = true;
             	queuePointForDrawing(e);
             }
             
@@ -44,7 +42,6 @@ public class DrawPanel extends Canvas {
         
             @Override
             public void mouseReleased(MouseEvent e) {
-            	mouseDown = false;
             	// finish mouse stroke, add it to allMouseStrokes, reset currentStroke, and repaint
             	MouseStroke.finalizeMouseStroke(currentStroke);
             	currentStroke = new MouseStroke();
@@ -55,7 +52,7 @@ public class DrawPanel extends Canvas {
 		addMouseListener(adapter);
 		addMouseMotionListener(adapter);
 		
-		// timer to paint the drawPanel 60 times per second if mouse is down
+		// timer to paint the drawPanel 60 times per second
 		Timer redrawTimer = new Timer((int) (1f/60*1000), (e) -> {
 			this.repaint();
 		});

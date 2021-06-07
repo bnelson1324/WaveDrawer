@@ -1,6 +1,5 @@
 package wave_drawer;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 

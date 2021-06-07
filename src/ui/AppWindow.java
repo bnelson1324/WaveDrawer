@@ -2,6 +2,8 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -21,7 +23,7 @@ public class AppWindow extends JFrame {
 	private JPanel contentPane;
 	private JButton btnPlay, btnClear, btnUndo, btnRedo;
 	private JTextField tfFrequency, tfVolume;
-	
+
 	public AppWindow() {
 		setTitle("Wave Drawer");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,19 +89,13 @@ public class AppWindow extends JFrame {
 			WavePlayer.isPlaying = !WavePlayer.isPlaying;
 		});
 		btnClear.addActionListener((e) -> {
-			if(!WavePlayer.isPlaying) {
-				MouseStroke.undo(MouseStroke.allFinalizedMouseStrokes.size());
-			}
+			MouseStroke.undo(MouseStroke.allFinalizedMouseStrokes.size());
 		});
 		btnUndo.addActionListener((e) -> {
-			if(!WavePlayer.isPlaying) {
-				MouseStroke.undo(1);
-			}
+			MouseStroke.undo(1);
 		});
 		btnRedo.addActionListener((e) -> {
-			if(!WavePlayer.isPlaying) {
-				MouseStroke.redo();
-			}
+			MouseStroke.redo();
 		});
 		
 		tfFrequency.addKeyListener(new KeyAdapter() {
@@ -127,6 +123,30 @@ public class AppWindow extends JFrame {
 				}
 			}
 		});
+		
+		// keybinds
+		KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if(e.getID() == KeyEvent.KEY_PRESSED) {
+					switch(e.getKeyCode()) {
+						case KeyEvent.VK_Z:
+							if(e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
+								MouseStroke.undo(1);
+							}
+							break;
+						case KeyEvent.VK_Y:
+							if(e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
+								MouseStroke.redo();
+							}
+							break;
+					}
+				}
+				return false;
+			}
+		};
+		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		manager.addKeyEventDispatcher(dispatcher);
 	}
 
 	
