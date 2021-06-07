@@ -5,7 +5,10 @@ import java.util.HashMap;
 
 public class PointMap extends HashMap<Integer, Integer> {
 
-	/* This class stores a series of x and y values representing points */ 
+	// all finalized points
+	public static PointMap allFinalizedPoints = new PointMap();
+
+	/** This class stores a series of x and y values representing points */ 
 	
 	// adds each point in toAdd to this pointMap if this pointMap doesn't have a point in the same spot
 		public void addPointMaps(HashMap<Integer, Integer> toAdd) {

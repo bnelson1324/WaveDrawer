@@ -11,9 +11,6 @@ public class MouseStroke {
 	// all points in the mouse stroke
 	public PointMap pointMap;
 	
-	// all finalized points
-	public static PointMap allFinalizedPoints = new PointMap();
-	
 	public static ArrayList<MouseStroke> allFinalizedMouseStrokes = new ArrayList<MouseStroke>();
 	
 	public MouseStroke() {
@@ -26,7 +23,7 @@ public class MouseStroke {
 	
 	// finalizes a mouse stroke, adding each of its points to allFinalizedPoints if there is not already a point at the same x value
 	public static void finalizeMouseStroke(MouseStroke ms) {
-		allFinalizedPoints.addPointMaps(ms.pointMap);
+		PointMap.allFinalizedPoints.addPointMaps(ms.pointMap);
 		MouseStroke.allFinalizedMouseStrokes.add(ms);
 	}
 	

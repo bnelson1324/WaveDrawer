@@ -23,6 +23,10 @@ public class Main {
 			}
 		});
 		
+		new Thread(() -> {
+			WavePlayer.start();
+		}).start();
+		
 		/*// plays a sin wave at 440hz
 		double[] wave = new double[StdAudio.SAMPLE_RATE];
 		for(int i = 0; i < StdAudio.SAMPLE_RATE; i++) {

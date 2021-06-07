@@ -12,6 +12,7 @@ import javax.swing.Timer;
 
 import wave_drawer.MouseStroke;
 import wave_drawer.PointMap;
+import wave_drawer.WavePlayer;
 
 public class DrawPanel extends Canvas {
 
@@ -62,6 +63,11 @@ public class DrawPanel extends Canvas {
 	}
 	
 	public void queuePointForDrawing(MouseEvent e) {
+		// only queues points for drawing if not currently playing the wave
+		if(WavePlayer.isPlaying) {
+			return;
+		}
+		
 		Point p = e.getPoint();
 		pointsToDraw.put(p.x, p.y);
 	}
@@ -77,7 +83,7 @@ public class DrawPanel extends Canvas {
 		
 		g.setColor(Color.BLUE);
 		for(Integer x : pointsToDrawClone.keySet()) {
-			if(!(MouseStroke.allFinalizedPoints.containsKey(x) || currentStroke.pointMap.containsKey(x))) {
+			if(!(PointMap.allFinalizedPoints.containsKey(x) || currentStroke.pointMap.containsKey(x))) {
 				g.fillOval(x, pointsToDrawClone.get(x), 5, 5);
 				currentStroke.addPoint(new Point(x, pointsToDrawClone.get(x)));
 			}
