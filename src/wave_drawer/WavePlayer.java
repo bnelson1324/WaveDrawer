@@ -11,7 +11,7 @@ public class WavePlayer {
 	/** This class manages the audio and plays back the wave */
 	
 	// whether or not the WavePlayer should play sound
-	public static boolean isPlaying = false;
+	public static volatile boolean isPlaying = false;
 	
 	// for preparing wave for playing right after play button is pressed
 	public static boolean readyToPlay = false;
@@ -67,7 +67,6 @@ public class WavePlayer {
 				}
 				timesPlayed++;
 			} else {
-				System.out.print("");
 				if(readyToPlay) {
 					readyToPlay = false;
 				}
