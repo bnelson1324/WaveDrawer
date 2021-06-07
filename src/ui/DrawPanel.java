@@ -19,6 +19,8 @@ public class DrawPanel extends Canvas {
 	public PointMap pointsToDraw; // queue of points to draw
 	public MouseStroke currentStroke; // stores the points drawn in the current mouse stroke
 	private boolean mouseDown = false;
+	
+	public static volatile boolean clearAndRedraw = false; // whether the paint function should clear and redraw all points next time it is called
 
 	public DrawPanel() {
 		super();
@@ -55,9 +57,7 @@ public class DrawPanel extends Canvas {
 		
 		// timer to paint the drawPanel 60 times per second if mouse is down
 		Timer redrawTimer = new Timer((int) (1f/60*1000), (e) -> {
-			if(this.mouseDown) {
-				this.repaint();
-			}
+			this.repaint();
 		});
 		redrawTimer.start();
 	}
@@ -70,6 +70,7 @@ public class DrawPanel extends Canvas {
 		
 		Point p = e.getPoint();
 		pointsToDraw.put(p.x, p.y);
+		MouseStroke.redoQueue.clear();
 	}
 	
 	/* drawing */
@@ -82,12 +83,25 @@ public class DrawPanel extends Canvas {
 		pointsToDraw.clear();
 		
 		g.setColor(Color.BLUE);
-		for(Integer x : pointsToDrawClone.keySet()) {
-			if(!(PointMap.allFinalizedPoints.containsKey(x) || currentStroke.pointMap.containsKey(x))) {
-				g.fillOval(x, pointsToDrawClone.get(x), 5, 5);
-				currentStroke.addPoint(new Point(x, pointsToDrawClone.get(x)));
+		drawPointsInPointMap(pointsToDrawClone, g, true);
+		
+		if(clearAndRedraw) {
+			g.clearRect(0, 0, getWidth(), getHeight());
+			drawPointsInPointMap(PointMap.allFinalizedPoints, g, false);
+			drawPointsInPointMap(pointsToDrawClone, g, false);
+			clearAndRedraw = false;
+		}
+	}
+	
+	private void drawPointsInPointMap(PointMap pm, Graphics g, boolean partOfCurrentStroke) {
+		for(Integer x : pm.keySet()) {
+			if(!(PointMap.allFinalizedPoints.containsKey(x) || currentStroke.pointMap.containsKey(x)) || !partOfCurrentStroke) {
+				g.fillOval(x, pm.get(x), 5, 5);
+				if(partOfCurrentStroke) {
+					currentStroke.addPoint(new Point(x, pm.get(x)));
+				}
 			}
-		}	
+		}
 	}
 	
 	/* misc */

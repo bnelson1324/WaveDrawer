@@ -29,6 +29,10 @@ public class WavePlayer {
 	public static void start() {
 		while(true) {
 			if(isPlaying) {
+				if(PointMap.allFinalizedPoints.size() < 2) {
+					isPlaying = false;
+					continue;
+				}
 				if(!readyToPlay) {
 					xValLastIndex = 0;
 					timesPlayed = 0;

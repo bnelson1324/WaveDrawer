@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.text.DecimalFormat;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import wave_drawer.MouseStroke;
 import wave_drawer.WavePlayer;
 
 public class AppWindow extends JFrame {
@@ -87,13 +87,19 @@ public class AppWindow extends JFrame {
 			WavePlayer.isPlaying = !WavePlayer.isPlaying;
 		});
 		btnClear.addActionListener((e) -> {
-			
+			if(!WavePlayer.isPlaying) {
+				MouseStroke.undo(MouseStroke.allFinalizedMouseStrokes.size());
+			}
 		});
 		btnUndo.addActionListener((e) -> {
-			
+			if(!WavePlayer.isPlaying) {
+				MouseStroke.undo(1);
+			}
 		});
 		btnRedo.addActionListener((e) -> {
-			
+			if(!WavePlayer.isPlaying) {
+				MouseStroke.redo();
+			}
 		});
 		
 		tfFrequency.addKeyListener(new KeyAdapter() {
