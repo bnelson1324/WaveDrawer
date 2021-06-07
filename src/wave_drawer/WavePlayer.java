@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import lib.StdAudio;
+import ui.DrawPanel;
 
 public class WavePlayer {
 
 	/** This class manages the audio and plays back the wave */
 	
 	// whether or not the WavePlayer should play sound
-	public static volatile boolean isPlaying = false;
+	private static volatile boolean isPlaying = false;
 	
 	// for preparing wave for playing right after play button is pressed
 	public static boolean readyToPlay = false;
@@ -39,6 +40,7 @@ public class WavePlayer {
 					yMin = PointMap.allFinalizedPoints.get((int) xValsToPlay.get(0));
 					yMax = PointMap.allFinalizedPoints.get((int) xValsToPlay.get(0));
 					findYExtremes();
+					DrawPanel.connectPointsWithLines = true;
 					readyToPlay = true;
 				}
 				// speed at which the waveplayer goes through x values
@@ -101,4 +103,12 @@ public class WavePlayer {
 		}
 	}
 	
+	public static void toggleIsPlaying() {
+		isPlaying = !isPlaying;
+		DrawPanel.clearAndRedraw = true;
+	}
+	
+	public static boolean getIsPlaying() {
+		return isPlaying;
+	}
 }

@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.Timer;
 
@@ -19,7 +20,8 @@ public class DrawPanel extends Canvas {
 	public PointMap pointsToDraw; // queue of points to draw
 	public MouseStroke currentStroke; // stores the points drawn in the current mouse stroke
 	
-	public static volatile boolean clearAndRedraw = false; // whether the paint function should clear and redraw all points next time it is called
+	public static boolean clearAndRedraw = false; // whether the paint function should clear and redraw all points next time it is called
+	public static boolean connectPointsWithLines = false; // whether the paint function should connect all points with lines next time it is called
 
 	public DrawPanel() {
 		super();
@@ -61,7 +63,7 @@ public class DrawPanel extends Canvas {
 	
 	public void queuePointForDrawing(MouseEvent e) {
 		// only queues points for drawing if not currently playing the wave
-		if(WavePlayer.isPlaying) {
+		if(WavePlayer.getIsPlaying()) {
 			return;
 		}
 		
@@ -87,6 +89,20 @@ public class DrawPanel extends Canvas {
 			drawPointsInPointMap(PointMap.allFinalizedPoints, g, false);
 			drawPointsInPointMap(pointsToDrawClone, g, false);
 			clearAndRedraw = false;
+		}
+		
+		if(connectPointsWithLines) {
+			PointMap allExistingPoints = (PointMap) PointMap.allFinalizedPoints.clone();
+			allExistingPoints.addPointMap(pointsToDrawClone);
+			ArrayList<Integer> sortedXVals = WavePlayer.sortPointMap(allExistingPoints);
+			for(int i = 0; i < sortedXVals.size() - 1; i++) {
+				Integer thisX = sortedXVals.get(i);
+				Point thisPoint = new Point(thisX, allExistingPoints.get(thisX));
+				Integer nextX = sortedXVals.get(i + 1);
+				Point nextPoint = new Point(nextX, allExistingPoints.get(nextX));
+				g.drawLine(thisPoint.x, thisPoint.y, nextPoint.x, nextPoint.y);
+			}
+			connectPointsWithLines = false;
 		}
 	}
 	

@@ -86,7 +86,7 @@ public class AppWindow extends JFrame {
 	
 	private void addListeners() {
 		btnPlay.addActionListener((e) -> {
-			WavePlayer.isPlaying = !WavePlayer.isPlaying;
+			WavePlayer.toggleIsPlaying();
 		});
 		btnClear.addActionListener((e) -> {
 			MouseStroke.undo(MouseStroke.allFinalizedMouseStrokes.size());
@@ -130,6 +130,9 @@ public class AppWindow extends JFrame {
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				if(e.getID() == KeyEvent.KEY_PRESSED) {
 					switch(e.getKeyCode()) {
+						case KeyEvent.VK_SPACE:
+							WavePlayer.toggleIsPlaying();
+							break;
 						case KeyEvent.VK_Z:
 							if(e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK) {
 								MouseStroke.undo(1);
